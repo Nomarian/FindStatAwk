@@ -1,0 +1,34 @@
+#!/usr/bin/rc
+
+# first arg goes to awk, the rest goes to find
+# if finds args $1 contains a -, $PWD gets set as its starting point
+
+# ----------------------- Variables
+
+nl=$ifs(3)
+awkargs='{print file}' # default arg for awk
+Path=$PWD # default path for find
+
+# ----------------------- Functions
+
+fn ftest { ~ $1^* $1 && return 0 || return 1 }
+fn collapse {ifs=() $1=`{for(* in $($1)){echo -n $*}}}
+
+# ----------------------- Arg Check
+# use getflags?
+
+switch($#*){
+ case 0; Path=$Path;awkargs=$awkargs
+ case 1; Path=$Path;awkargs=$1; shift
+ case *; awkargs=$1;shift
+  ~ $1 '-'^* && Path=$Path || {Path=$1;shift}
+}
+
+~ $Path */ && ifs=/ *=$* { # Remove trailing / from it (for dirname and filename)
+  Path=/^`{ echo -n $Path }
+  collapse Path
+}
+
+args=($Path $*)
+
+find $args -print0 >[2] /dev/null | xargs -0 busybox stat -c $format >[2] /dev/null | awk $awkmodule^$nl^$awkargs

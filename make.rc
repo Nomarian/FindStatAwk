@@ -1,0 +1,35 @@
+#!/usr/bin/rc -e
+# config.rc may not be sufficient
+
+# This will build module into 
+ifs='' { awkmodule=`{ cat module.awk } }
+
+# separates the fields for stat -c 
+#divider	=`{ printf \r } # this could be anything, \a, \b
+~ $#divider 0 && divider=''
+
+ifs='' {
+ format=`{ awk '
+  BEGIN { getline; printf("%s",$0) }
+  {printf("%s%s",ENVIRON["divider"],$0)}
+  ' formats
+ }
+}
+
+filename = awkfind
+
+{
+ echo '#!'^`{which rc}^$nl$nl
+
+ echo '#( format )#' 
+ whatis format 
+ {echo;echo;echo} 
+
+ echo '#( awkmodule )#'$nl$nl 
+ whatis awkmodule 
+ {echo;echo;echo} 
+
+ echo '#( main.rc )#'$nl$nl 
+ cat main.rc 
+} > $filename
+chmod -v +x $filename
