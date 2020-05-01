@@ -7,8 +7,9 @@ Example: awkfind 'awk expression' --options-for-find
 
 ### Examples
 
-* awkfind '{print filename}' /  # Prints filename of all subdirectories directories in /
-* awkfind '{print sizeb "\t" file}' -maxdepth 1 # same as du -a $PWD
+* awkfind  # The same as find $PWD
+* awkfind '/\.c$|\.h$/' # Will look for all .c and .h files  
+* awkfind '{print sizeb "\t" file}' -maxdepth 1 # semi du like output
 * awkfind 'filetype == "directory"' $HOME  # print all directories in $HOME
 * awkfind 'tolower(ext) ~ /mkv|mp4|avi/' $HOME # Look for video files in $HOME
 
