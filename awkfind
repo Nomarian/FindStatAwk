@@ -65,26 +65,32 @@ BEGIN {
  FS="\r"
 }
 
-{ # This depends on the formats file... maybe?
- operms		= $1
- huperms	= $2
- humanperms	= $2
+{ # Formats translater
+ operms		= $1 #0755 
+
+ huperms	= $2 #-rwxrwxrwx
+ humanperms	= $2 # synonym
  permission	= $2
  permissions	= $2
+ 
  blocks		= $3
  ByteBlocks	= $4
  DeviceNum	= $5
  DeviceHex	= $6
  rawhex		= $7
- filetype	= $8
+
+ filetype	= $8 # regular file|directory|character special file
+ type		= $8 # block special file|symbolic link|regular empty file
+
  groupid	= $9
  gid		= $9
+
  groupname	= $10
  hardlinks	= $11
  inode		= $12
  mount		= $13
  file		= $14
- FileName	= $15
+ FileName	= $15 # outputs realpath for symbolic links
  optimalIO	= $16
  sizeb		= $17
  majordevicetype	= $18
@@ -116,19 +122,20 @@ BEGIN {
  for(i=1;i<=NF;i++) all[i]=$i
  $0=file # for quick searching with // or $0 ~ ""
 
-# fsize["bytes"] = sizeb
-# fsize["kb"] = sizeb / 1024
-
+ # file be filename?
+ # path is fullpath?
+ # dir is the directory? as in ../
+ # dirname is the directory name?
+ 
 # Synonyms
  username=uname
- 
  
  makesizes(sizeb)
  filename	= _basename_(file)
  ext = ""
 
  if (filetype == "directory") {
-	dirname = file
+	dirname = file # get ../ not current file!
   } else {
 	dirname	= _dirname_(file)
  }
@@ -143,16 +150,6 @@ BEGIN {
 	}
  }
 }
-
-# TODO
- # Must change formats to be in alphabetical order, reflect that change here as well
-# move formats to formats.awk, format makes the awkmodule
-# function erase(){ deleteit = deleteit file } SANITIZE FOR rm!
-# END { "rm " deletit }
-
-# date(%Y)?
-# stat -format dates wont output UTC? (-0400) at the end, unlike normal stat
-#
 '
 
 
@@ -163,14 +160,18 @@ BEGIN {
 # awkfind [awk command] [find arguments]
 # awk command only exists if there are more than 2 arguments 
 
-~ $#* 0 && exec find $*
+~ $#* 0 && exec find $PWD
 
 nl=$ifs(3)
 awkargs=$1; shift
 
-for (* in $*){
- test -d $* && *=`{ realpath $* }
- args=($args $*)
+p=$p {
+ for ( * in $* ) {
+  # this could certainly break with a weird file (use getflags?)
+  test -e $* && ifs=$nl { p=1; *=`{ realpath $* } }
+  args=($args $*)
+ }
+ ~ $p 1 || args=($args $PWD)
 }
 
 find $args -print0 >[2] /dev/null | \
