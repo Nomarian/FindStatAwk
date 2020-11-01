@@ -59,19 +59,25 @@ BEGIN {
 }
 
 { # This depends on the formats file... maybe?
- operms		= $1
- huperms	= $2
- humanperms	= $2
+ operms		= $1 #0755 
+
+ huperms	= $2 #-rwxrwxrwx
+ humanperms	= $2 # synonym
  permission	= $2
  permissions	= $2
+ 
  blocks		= $3
  ByteBlocks	= $4
  DeviceNum	= $5
  DeviceHex	= $6
  rawhex		= $7
- filetype	= $8
+
+ filetype	= $8 # regular file|directory|character special file
+ type		= $8 # block special file|symbolic link|regular empty file
+
  groupid	= $9
  gid		= $9
+
  groupname	= $10
  hardlinks	= $11
  inode		= $12
