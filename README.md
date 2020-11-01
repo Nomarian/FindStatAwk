@@ -23,6 +23,7 @@ Example: awkfind 'awk expression' --options-for-find
 ### Build/Install
 
 rc make.rc and awkfindstat will be created from the modules, you can put it in your $PATH after
+you may also want [make.rc](https://bitbucket.org/lalalan/make.rc/) though its not necessary
 
 ### Notes
 
