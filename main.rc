@@ -3,14 +3,18 @@
 # awkfind [awk command] [find arguments]
 # awk command only exists if there are more than 2 arguments 
 
-~ $#* 0 && exec find $*
+~ $#* 0 && exec find $PWD
 
 nl=$ifs(3)
 awkargs=$1; shift
 
-for (* in $*){
- test -e $* && *=`{ realpath $* }
- args=($args $*)
+p=$p {
+ for ( * in $* ) {
+  # this could certainly break with a weird file (use getflags?)
+  test -e $* && ifs=$nl { p=1; *=`{ realpath $* } }
+  args=($args $*)
+ }
+ ~ $p 1 || args=($args $PWD)
 }
 
 find $args -print0 >[2] /dev/null | \
