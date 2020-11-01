@@ -1,5 +1,22 @@
 #!/usr/bin/rc -e
-# config.rc may not be sufficient
+
+depends=(awk busybox find rc)
+
+fn check_dependencies {
+ echo Checking dependencies
+ for (* in $depends) {
+  if (! whatis $* > /dev/null >[2=1]){missing=($missing $*)}
+ }
+
+ if (! ~ $#missing 0) {
+  echo 'Error: You are missing ' $missing^, > /dev/stderr
+  echo 'Please install or put it in your PATH'
+  exit 1
+ }
+ echo ' ' OK
+}
+
+check_dependencies
 
 # This will build module into 
 ifs='' { awkmodule=`{ cat module.awk } }
