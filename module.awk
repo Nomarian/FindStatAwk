@@ -58,7 +58,7 @@ BEGIN {
  FS="\r"
 }
 
-{ # This depends on the formats file... maybe?
+{ # Formats translater
  operms		= $1 #0755 
 
  huperms	= $2 #-rwxrwxrwx
@@ -83,7 +83,7 @@ BEGIN {
  inode		= $12
  mount		= $13
  file		= $14
- FileName	= $15
+ FileName	= $15 # outputs realpath for symbolic links
  optimalIO	= $16
  sizeb		= $17
  majordevicetype	= $18
@@ -115,19 +115,20 @@ BEGIN {
  for(i=1;i<=NF;i++) all[i]=$i
  $0=file # for quick searching with // or $0 ~ ""
 
-# fsize["bytes"] = sizeb
-# fsize["kb"] = sizeb / 1024
-
+ # file be filename?
+ # path is fullpath?
+ # dir is the directory? as in ../
+ # dirname is the directory name?
+ 
 # Synonyms
  username=uname
- 
  
  makesizes(sizeb)
  filename	= _basename_(file)
  ext = ""
 
  if (filetype == "directory") {
-	dirname = file
+	dirname = file # get ../ not current file!
   } else {
 	dirname	= _dirname_(file)
  }
@@ -142,13 +143,3 @@ BEGIN {
 	}
  }
 }
-
-# TODO
- # Must change formats to be in alphabetical order, reflect that change here as well
-# move formats to formats.awk, format makes the awkmodule
-# function erase(){ deleteit = deleteit file } SANITIZE FOR rm!
-# END { "rm " deletit }
-
-# date(%Y)?
-# stat -format dates wont output UTC? (-0400) at the end, unlike normal stat
-#

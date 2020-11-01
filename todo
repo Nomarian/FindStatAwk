@@ -1,0 +1,27 @@
+
+a manpage
+
+getflags so you know if there are actual files in args
+
+stat output as a csv with header
+then setting the module variables is a matter of looking into the csv header...?
+
+beware of symbolic links
+'/home/pi/Proj/AsciiDT/examples/GeoIPCountryWhois.csv' -> '/home/pi/.weechat/country/GeoIPCountryWhois.csv'
+
+
+# TODO
+ # Must change formats to be in alphabetical order, reflect that change here as well
+# move formats to formats.awk, format makes the awkmodule
+# function erase(){ deleteit = deleteit file } SANITIZE FOR rm!
+# END { "rm " deletit }
+# exec(array) will execute array when arglimit is reached, so you can launch command with multiple arguments
+# 
+
+# date(%Y)?
+# stat -format dates wont output UTC? (-0400) at the end, unlike normal stat
+#
+
+have an args examiner that will build format correctly and will also build a formats.awk correctly
+basically looks at all the variables you're using and if you use a variable, then $1 will contain that variable
+$1 is the filename of course.
