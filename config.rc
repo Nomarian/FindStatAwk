@@ -1,0 +1,31 @@
+#!/usr/bin/rc -e
+
+# Tunnable
+interpreter=rc # brc or 9rc
+out=awkfind
+outdir=$HOME/Run/CLI
+
+# Non-tunable
+depends=(awk busybox find rc)
+catfiles=(format awkmodule main.rc)
+trashfiles=(format awkmodule)
+comment='#'
+
+fn premake { # will create some files to be used 
+ ifs='' {
+  awkmodule=`{ cat module.awk }
+ 
+  format=`{ awk ' # Will create the formats file
+   BEGIN {
+    divider="\r"
+    getline; printf("%s",$0)
+   }
+   {printf("%s%s",divider,$0)}
+   ' formats
+  }
+ }
+ whatis format > format
+ whatis awkmodule > awkmodule
+}
+
+fn postmake { rm $trashfiles }
