@@ -1,4 +1,3 @@
-#!/usr/bin/rc
 
 # awkfind [awk command] [find arguments]
 # awk command only exists if there are more than 2 arguments 

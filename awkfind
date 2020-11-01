@@ -1,4 +1,7 @@
 #!/usr/bin/rc
+
+
+
 #( format )#
 format=%a%A%b%B%d%D%f%F%g%G%h%i%m%n%N%o%s%t%T%u%U%w%W%x%X%y%Y%z%Z%c%l%S
 
@@ -155,7 +158,6 @@ BEGIN {
 
 
 #( main.rc )#
-#!/usr/bin/rc
 
 # awkfind [awk command] [find arguments]
 # awk command only exists if there are more than 2 arguments 
@@ -177,3 +179,6 @@ p=$p {
 find $args -print0 >[2] /dev/null | \
  xargs -0 busybox stat -c $format >[2] /dev/null | \
  awk $awkmodule^$nl^$awkargs
+
+
+
