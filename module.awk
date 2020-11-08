@@ -75,10 +75,15 @@ BEGIN {
  filetype	= $8 # regular file|directory|character special file
  type		= $8 # block special file|symbolic link|regular empty file
 
- groupid	= $9
- gid		= $9
+ # Group ID
+ gid		= $9 
+ groupid	= $9 # (Numeric)
 
+ # Group name
+ group	= $10
  groupname	= $10
+ gname	= $10
+
  hardlinks	= $11
  inode		= $12
  mount		= $13
@@ -88,8 +93,12 @@ BEGIN {
  sizeb		= $17
  majordevicetype	= $18
  minordevicetype	= $19
- uid		= $20
- uname		= $21
+
+ # User ID
+ uid		= $20 # numeric
+ uname		= $21 # name
+ username	= $21 # name
+ owner		= $21 # name
 
  # Dates!
  hbirth		= $22
@@ -119,9 +128,6 @@ BEGIN {
  # path is fullpath?
  # dir is the directory? as in ../
  # dirname is the directory name?
- 
-# Synonyms
- username=uname
  
  makesizes(sizeb)
  filename	= _basename_(file)
