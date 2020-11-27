@@ -1,4 +1,7 @@
 
+use function walker which is either walk or find
+if its find, then it uses find -exec instead of xargs
+
 a manpage
 
 getflags so you know if there are actual files in args
@@ -8,6 +11,10 @@ then setting the module variables is a matter of looking into the csv header...?
 
 beware of symbolic links
 '/home/pi/Proj/AsciiDT/examples/GeoIPCountryWhois.csv' -> '/home/pi/.weechat/country/GeoIPCountryWhois.csv'
+
+RS and FS are modifiable and inherited
+RS is \x00
+FS is is RS (or \x1E or 30
 
 
 # TODO

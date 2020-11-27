@@ -1,7 +1,4 @@
 #!/usr/bin/rc
-
-
-
 #( format )#
 format=%a%A%b%B%d%D%f%F%g%G%h%i%m%n%N%o%s%t%T%u%U%w%W%x%X%y%Y%z%Z%c%l%S
 
@@ -66,6 +63,8 @@ BEGIN {
  split("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec",Months)
 
  FS="\r"
+# FS="\x30"
+# RS="\x00"
 }
 
 { # Formats translater
@@ -85,12 +84,14 @@ BEGIN {
  filetype	= $8 # regular file|directory|character special file
  type		= $8 # block special file|symbolic link|regular empty file
 
- # Group ID (Numeric)
- groupid	= $9
- gid		= $9
+ # Group ID
+ gid		= $9 
+ groupid	= $9 # (Numeric)
 
  # Group name
  group	= $10
+ groupname	= $10
+ gname	= $10
 
  hardlinks	= $11
  inode		= $12
@@ -165,24 +166,63 @@ BEGIN {
 
 # awkfind [awk command] [find arguments]
 # awk command only exists if there are more than 2 arguments 
+# awkfind [awk expression [path] [find args]]
+# if something funky is happening, set DEBUG so that you know what is passed where
 
 ~ $#* 0 && exec find $PWD
 
+PWD=`{ pwd } # JIC
 nl=$ifs(3)
-awkargs=$1; shift
 
-p=$p {
- for ( * in $* ) {
-  # this could certainly break with a weird file (use getflags?)
-  test -e $* && ifs=$nl { p=1; *=`{ realpath $* } }
-  args=($args $*)
- }
- ~ $p 1 || args=($args $PWD)
+~ $#* 0 || { awkargs=$1; shift }
+~ $#* 0 || {
+ if (test -e $1) { dir=$1 } else { args=$1 }
+ shift
+}
+~ $#* 0 || { args=($args $*); *=() }
+~ $#dir 0 && dir=.
+
+
+ifs=() { # stat does not output the fullpath, so we always get the full path
+ dir=`{ realpath $dir | awk '# gets everything but the last character
+  BEGIN{RS=ORS="\x00"}
+  { printf("%s", substr($0, 1, length($0)-1 ) ) }
+ '}
+}
+# realpath $nl$nl | lua -e 'io.write(io.read"*a":sub(1,-2))'
+
+~ $#DEBUG 0 || {
+ echo awkargs: $awkargs
+ echo dir: $dir
+ echo args: $args
+ echo
+ exit
 }
 
-find $args -print0 >[2] /dev/null | \
- xargs -0 busybox stat -c $format >[2] /dev/null | \
- awk $awkmodule^$nl^$awkargs
+# gnu stat uses printf, and you can pass '\x00'
+#stat=(busybox stat --printf^'='^$format^'\x00')
 
+# freebsd stat uses -f instead of -c
+#stat=(stat -n -f $format) # unsupported for now
 
+stat=(busybox stat -c $format)
 
+fn awk { builtin awk $awkmodule^$nl^$awkargs }
+
+fn usewalk {
+ { walk -0 $dir | xargs -0 $stat } >[2] /dev/null | awk
+}
+
+fn usefind {
+ # -print0 for find?
+ args=($dir $args -exec $stat '{}' + )
+ find $args >[2] /dev/null | awk
+}
+
+ usefind
+ exit
+if (whatis -p walk > /dev/null >[2=1]) {
+ ~ $#args 0 && usewalk || usefind
+} else {
+ usefind
+}

@@ -56,6 +56,8 @@ BEGIN {
  split("Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec",Months)
 
  FS="\r"
+# FS="\x30"
+# RS="\x00"
 }
 
 { # Formats translater
