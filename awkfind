@@ -219,8 +219,6 @@ fn usefind {
  find $args >[2] /dev/null | awk
 }
 
- usefind
- exit
 if (whatis -p walk > /dev/null >[2=1]) {
  ~ $#args 0 && usewalk || usefind
 } else {
